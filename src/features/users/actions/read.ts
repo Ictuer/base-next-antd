@@ -1,13 +1,39 @@
 'use server'
 
 import prisma from '@/util/prisma'
-import { Prisma } from '@prisma/client'
+import { Prisma, Role } from '@prisma/client'
 
-export const getUsers = async (where?: Prisma.UserWhereInput) => {
+interface Params  {
+  pageSize:number 
+  current:number
+  name?:string 
+  email?:string
+  role?:Role
+}
+export const getUsers = async ({pageSize, current, ...rest}:Params) => {
+  const where:Prisma.UserWhereInput = {}
+  if(rest.email){
+    where.email = {
+      contains: rest.email,
+      mode:'insensitive'
+    }
+  }
+  if(rest.name){
+    where.name = {
+      contains: rest.name,
+      mode: 'insensitive',
+    }
+  }
+  if(rest.role){
+    where.role = rest.role
+  }
+  
   try {
     const [data, total] = await prisma.$transaction([
       prisma.user.findMany({
         where,
+        take:pageSize,
+        skip: pageSize * (current-1)
       }),
       prisma.user.count({ where }),
     ])

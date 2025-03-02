@@ -1,5 +1,6 @@
 import { ProColumns } from '@ant-design/pro-components'
 import { getUsers } from '../actions/read'
+import { ROLE_OPTIONS } from '@/constants/role'
 export const columns = [
   {
     title: 'Name',
@@ -11,6 +12,27 @@ export const columns = [
     dataIndex: 'email',
     formItemProps: {
       rules: [{ required: true, type: 'email' }],
+    },
+  },
+  {
+    title: 'Password',
+    dataIndex: 'password',
+    formItemProps: {
+      rules: [{ required: true }],
+    },
+    valueType:'password',
+    search:false,
+    hideInTable:true
+  },
+  {
+    title: 'Role',
+    dataIndex: 'role',
+    formItemProps: {
+      rules: [{ required: true }],
+    },
+    valueType:'select',
+    request: async()=>{
+      return ROLE_OPTIONS
     },
   },
   {

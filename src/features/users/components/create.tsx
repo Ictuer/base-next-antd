@@ -1,17 +1,35 @@
-import { BetaSchemaForm } from '@ant-design/pro-components'
+import { ActionType, BetaSchemaForm } from '@ant-design/pro-components'
 import { columns } from '../config'
 import { PlusOutlined } from '@ant-design/icons'
 import { App, Button } from 'antd'
+import { Prisma } from '@prisma/client'
+import { createUser } from '../actions/create'
+import { useRef } from 'react'
 
-export default function CreateUserFormModal() {
+interface Props {
+  onSuccess: ()=>void
+}
+export default function CreateUserFormModal({onSuccess}: Props ) {
+  const formRef = useRef<any>()
   const { message } = App.useApp()
-  const onCreate = async () => {
-    message.success('Created Successfully!')
-
-    return Promise.resolve(true) // to close modal
+  const onCreate = async (data:Prisma.UserCreateInput) => {
+    try {
+      const res = await createUser(data)
+      if (res.success) {
+        message.success('Created Successfully!')
+        onSuccess()
+        return true
+      }
+      message.error(res.message)
+      return false
+    } catch (error) {
+      message.error("An unexpected error occurred!")
+      return false
+    }
   }
   return (
     <BetaSchemaForm
+      formRef={formRef}
       title="Create new user"
       layoutType="ModalForm"
       columns={columns}
