@@ -1,0 +1,9 @@
+{
+  "extends": ["next/core-web-vitals", "eslint:recommended", "prettier"],
+  "rules": {
+    "semi": ["error", "never"],
+    "no-unused-vars": "off",
+    "no-empty-pattern": "off",
+    "import/no-anonymous-default-export": "off"
+  }
+}

@@ -1,0 +1,7 @@
+enum Role {
+  Guest
+  Tester
+  Developer
+  TestLeader
+  ProjectManager
+}

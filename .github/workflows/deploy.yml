@@ -1,0 +1,31 @@
+name: Deploy Frontend
+
+on:
+  push:
+    tags:
+      - 'fe-**'
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract Tag Name
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }} # sudo passwd root
+          port: ${{ secrets.PORT }}
+          script: |
+            echo deploy tag: ${{ env.TAG_NAME }}
+            cd /home/draftapi-fe
+            git fetch --tags
+            git reset --hard HEAD
+            git checkout ${{ env.TAG_NAME }}
+            git pull origin ${{ env.TAG_NAME }}
+            npm install --no-save
+            npm run build
+            pm2 restart draftapi-fe
